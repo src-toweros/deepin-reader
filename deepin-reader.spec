@@ -7,13 +7,14 @@
 
 Name:           deepin-reader
 Version:        5.6.2
-Release:        1
+Release:        2
 Summary:        Document Viewer is a simple PDF reader, supporting bookmarks, highlights and annotations.
 License:        GPLv3+
 URL:            https://uos-packages.deepin.com/uos/pool/main/d/deepin-reader/
 Source0:        %{name}-%{version}.orig.tar.xz
 
 BuildRequires: qt5-qtbase-devel
+BuildRequires: dtkcore-devel
 BuildRequires: dtkwidget-devel
 BuildRequires: kf5-karchive-devel
 BuildRequires: qt5-linguist
@@ -71,5 +72,8 @@ mv %{?buildroot}//usr/lib/* %{?buildroot}%{_libdir}
 %doc README.md
 
 %changelog
+* Tue Sep 1 2020 chenbo pan <panchenbo@uniontech.com> - 5.6.9-2
+- fix compile fail
+
 * Thu Jul 30 2020 openEuler Buildteam <buildteam@openeuler.org> - 5.6.2-1
 - Package init
