@@ -1,79 +1,60 @@
-%bcond_with check
-
-%global with_debug 1
-%if 0%{?with_debug}
-%global debug_package   %{nil}
-%endif
-
 Name:           deepin-reader
-Version:        5.6.2
-Release:        2
-Summary:        Document Viewer is a simple PDF reader, supporting bookmarks, highlights and annotations.
+Version:        5.7.0.21
+Release:        1
+Summary:        A simple PDF reader, supporting bookmarks, highlights and annotations
 License:        GPLv3+
-URL:            https://uos-packages.deepin.com/uos/pool/main/d/deepin-reader/
-Source0:        %{name}-%{version}.orig.tar.xz
+URL:            https://github.com/linuxdeepin/%{name}
+Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
-BuildRequires: qt5-qtbase-devel
-BuildRequires: dtkcore-devel
-BuildRequires: dtkwidget-devel
-BuildRequires: kf5-karchive-devel
-BuildRequires: qt5-linguist
-BuildRequires: poppler-qt5
+BuildRequires: gcc-c++
+BuildRequires: cmake
+BuildRequires: qt5-devel
+
+BuildRequires:  dtkcore-devel
+BuildRequires:  dtkwidget-devel
+BuildRequires:  dtkgui-devel
+BuildRequires: pkgconfig(ddjvuapi)
+BuildRequires: pkgconfig(nss)
+BuildRequires: pkgconfig(libjpeg)
+BuildRequires: pkgconfig(cairo)
+BuildRequires: openjpeg2-devel
 BuildRequires: poppler-qt5-devel
-BuildRequires: poppler
-BuildRequires: poppler-devel
-BuildRequires: djvulibre-devel
-BuildRequires: djvulibre-libs
 BuildRequires: libspectre-devel
-BuildRequires: libspectre
-BuildRequires: qt5-qtsvg-devel
-BuildRequires: qt5-qtmultimedia-devel
-BuildRequires: qt5-qtx11extras-devel
-BuildRequires: libtiff
+BuildRequires: kf5-karchive-devel
 BuildRequires: libtiff-devel
-BuildRequires: libuuid-devel
-BuildRequires: libuuid
 
 %description
-Document Viewer is a simple PDF reader, supporting bookmarks, highlights and annotations.
-
+%{summary}.
 
 %prep
 %autosetup
 
 %build
-sed -i '/^SUBDIRS/,$d' deepin_reader.pro
-echo 'SUBDIRS += \' >>  deepin_reader.pro
-echo '    DBService \' >>  deepin_reader.pro
-echo '    ModelService \' >>  deepin_reader.pro
-echo '    application' >>  deepin_reader.pro
-
-export PATH=$PATH:/usr/lib64/qt5/bin
-mkdir build && cd build
-%{_libdir}/qt5/bin/qmake ..
-%{__make}
-
-%install
-pushd %{_builddir}/%{name}-%{version}/build
-%make_install INSTALL_ROOT=%{buildroot}
+# help find (and prefer) qt5 utilities, e.g. qmake, lrelease
+export PATH=%{_qt5_bindir}:$PATH
+mkdir build && pushd build
+%qmake_qt5 ../ DAPP_VERSION=%{version} DEFINES+="VERSION=%{version}"
+%make_build
 popd
 
-mkdir -p %{?buildroot}%{_libdir}
-mv %{?buildroot}//usr/lib/* %{?buildroot}%{_libdir}
+%install
+%make_install -C build INSTALL_ROOT="%buildroot"
 
 %files
-%{_bindir}/deepin-reader
-%{_libdir}/*
-%{_datadir}/applications/deepin-reader.desktop
-%{_datadir}/deepin-reader/translations/deepin-reader_en_US.qm
-%{_datadir}/deepin-reader/translations/deepin-reader_zh_CN.qm
-%{_datadir}/icons/hicolor/scalable/apps/deepin-reader.svg
-
 %doc README.md
+%license LICENSE
+%{_bindir}/%{name}
+%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
+%{_datadir}/%{name}/translations/*.qm
+%{_datadir}/applications/%{name}.desktop
 
 %changelog
+* Wed Jul 07 2021 weidong <weidong@uniontech.com> - 5.7.0.21-1
+- Update to 5.7.0.21
+
 * Tue Sep 1 2020 chenbo pan <panchenbo@uniontech.com> - 5.6.9-2
 - fix compile fail
 
 * Thu Jul 30 2020 openEuler Buildteam <buildteam@openeuler.org> - 5.6.2-1
 - Package init
+
